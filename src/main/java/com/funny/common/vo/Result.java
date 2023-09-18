@@ -12,20 +12,20 @@ public class Result<T> {
     private String message;
     private T data;
 
-    public static <T> Result<T> success(){
+    public static<T>  Result<T> success(){
         return new Result<>(20000,"success",null);
     }
 
-    public static <T> Result<T> success(T data){
+    public static<T>  Result<T> success(T data){
         return new Result<>(20000,"success",data);
     }
 
-    public static <T> Result<T> success(T data, String message){
-        return new Result<>(20000,"success",data);
+    public static<T>  Result<T> success(T data, String message){
+        return new Result<>(20000,message,data);
     }
 
-    public static <T> Result<T> success(String message){
-        return new Result<>(20000,"success",null);
+    public static<T>  Result<T> success(String message){
+        return new Result<>(20000,message,null);
     }
 
     public static<T>  Result<T> fail(){
