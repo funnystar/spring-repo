@@ -16,4 +16,8 @@ import java.util.Map;
 public interface IUserService extends IService<User> {
 
     Map<String, Object> login(User user);
+
+    Map<String, Object> getUserInfo(String token);
+
+    void logout(String token);
 }
