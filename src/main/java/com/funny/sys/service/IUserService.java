@@ -20,4 +20,12 @@ public interface IUserService extends IService<User> {
     Map<String, Object> getUserInfo(String token);
 
     void logout(String token);
+
+    void addUser(User user);
+
+    User getUserById(Integer id);
+
+    void updateUser(User user);
+
+    void deleteUserById(Integer id);
 }

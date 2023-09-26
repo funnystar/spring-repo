@@ -99,26 +99,26 @@ public class UserController {
     @PostMapping
     public Result<?> addUser(@RequestBody User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userService.save(user);
+        userService.addUser(user);
         return Result.success("新增用户成功");
     }
 
     @PutMapping
     public Result<?> updateUser(@RequestBody User user){
         user.setPassword(null);
-        userService.updateById(user);
+        userService.updateUser(user);
         return Result.success("用户修改成功");
     }
 
     @GetMapping("/{id}")
     public Result<User> getUserById(@PathVariable("id") Integer id){
-        User user = userService.getById(id);
+        User user = userService.getUserById(id);
         return Result.success(user);
     }
 
     @DeleteMapping ("/{id}")
     public Result<User> deleteUserById(@PathVariable("id") Integer id){
-        userService.removeById(id);
+        userService.deleteUserById(id);
         return Result.success("删除用户成功");
     }
 

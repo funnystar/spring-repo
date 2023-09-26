@@ -3,14 +3,19 @@ package com.funny.sys.service.impl;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.funny.common.utils.JwtUtil;
+import com.funny.sys.entity.Menu;
 import com.funny.sys.entity.User;
+import com.funny.sys.entity.UserRole;
 import com.funny.sys.mapper.UserMapper;
+import com.funny.sys.mapper.UserRoleMapper;
+import com.funny.sys.service.IMenuService;
 import com.funny.sys.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -18,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -38,6 +44,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private IMenuService menuService;
+
+    @Resource
+    private UserRoleMapper userRoleMapper;
 
     @Override
     public Map<String, Object> login(User user) {
@@ -106,6 +118,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             List<String> roleList = this.baseMapper.getRoleNameByUserId(loginUser.getId());
             data.put("roles",roleList);
 
+            // 权限列表
+            List<Menu> menuList =  menuService.getMenuListByUserId(loginUser.getId());
+            data.put("menuList",menuList);
+
             return data;
         }
         return null;
@@ -115,6 +131,63 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void logout(String token) {
         //redisTemplate.delete(token);
 
+    }
+
+    @Override
+    @Transactional
+    public void addUser(User user) {
+        //  写入用户表
+        this.baseMapper.insert(user);
+        // 写入用户角色表
+        List<Integer> roleIdlist = user.getRoleIdList();
+        if (roleIdlist != null){
+            for (Integer roleId: roleIdlist){
+                userRoleMapper.insert(new UserRole(null,user.getId(),roleId));
+            }
+        }
+    }
+
+    @Override
+    public User getUserById(Integer id) {
+        User user = this.baseMapper.selectById(id);
+
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getUserId,id);
+        List<UserRole> userRoleList = userRoleMapper.selectList(wrapper);
+
+        List<Integer> roleIdList = userRoleList.stream()
+                                               .map(userRole -> {return  userRole.getRoleId();})
+                                               .collect(Collectors.toList());
+        user.setRoleIdList(roleIdList);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(User user) {
+        // 更新用户表
+        this.baseMapper.updateById(user);
+        // 清除原有角色
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getRoleId,user.getId());
+        userRoleMapper.delete(wrapper);
+        // 设置新角色
+        List<Integer> roleIdlist = user.getRoleIdList();
+        if (roleIdlist != null){
+            for (Integer roleId: roleIdlist){
+                userRoleMapper.insert(new UserRole(null,user.getId(),roleId));
+            }
+        }
+
+    }
+
+    @Override
+    public void deleteUserById(Integer id) {
+        this.baseMapper.deleteById(id);
+        // 清除原有角色
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getRoleId,id);
+        userRoleMapper.delete(wrapper);
     }
 
 
