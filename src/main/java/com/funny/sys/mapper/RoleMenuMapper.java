@@ -3,6 +3,8 @@ package com.funny.sys.mapper;
 import com.funny.sys.entity.RoleMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
 
+    public List<Integer> getMenuIdListByRoleId(Integer roleId);
 }

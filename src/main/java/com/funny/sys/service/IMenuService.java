@@ -3,6 +3,8 @@ package com.funny.sys.service;
 import com.funny.sys.entity.Menu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IMenuService extends IService<Menu> {
 
+    List<Menu> getAllMenu();
 }

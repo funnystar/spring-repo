@@ -21,7 +21,7 @@ public class CodeGenerator {
             FastAutoGenerator.create(url, username, password)
                     .globalConfig(builder -> {
                         builder.author(author) // 设置作者
-                                .enableSwagger() // 开启 swagger 模式
+                                //.enableSwagger() // 开启 swagger 模式
                                 //.fileOverride() // 覆盖已生成文件
                                 .outputDir(outputDir); // 指定输出目录
                     })

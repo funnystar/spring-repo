@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.funny.common.vo.Result;
 import com.funny.sys.entity.User;
 import com.funny.sys.service.IUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -23,6 +25,8 @@ import java.util.Map;
  * @author funny star
  * @since 2023-09-16
  */
+
+@Api(tags = {"用户接口列表"})
 @RestController
 @RequestMapping("/user")
 // @CrossOrigin
@@ -40,6 +44,7 @@ public class UserController {
         return Result.success(list,"查询成功");
     }
 
+    @ApiOperation("用户登录")
     @PostMapping("/login")
     public Result<Map<String,Object>> login(@RequestBody User user){
         Map<String,Object> data = userService.login(user);
@@ -49,6 +54,7 @@ public class UserController {
         return Result.fail(20002,"用户名或密码错误");
     }
 
+    @ApiOperation("获取用户信息")
     @GetMapping("/info")
     public Result<Map<String,Object>> getUserInfo(@RequestParam("token") String token){
         //根据token获取用户信息，redis
@@ -59,6 +65,7 @@ public class UserController {
         return Result.fail(20003,"登录信息无效，请重新登录");
     }
 
+    @ApiOperation("用户注销")
     @PostMapping("/logout")
     public Result<?> logout(@RequestHeader("X-Token") String token){
         userService.logout(token);
@@ -66,6 +73,7 @@ public class UserController {
 
     }
 
+    @ApiOperation("获取用户列表信息")
     @GetMapping("/list")
     public Result<Map<String,Object>> getUserList(@RequestParam(value = "username",required = false) String username,
                                               @RequestParam(value = "phone",required = false) String phone,
@@ -87,6 +95,7 @@ public class UserController {
         return Result.success(data);
     }
 
+    @ApiOperation("新增用户")
     @PostMapping
     public Result<?> addUser(@RequestBody User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));

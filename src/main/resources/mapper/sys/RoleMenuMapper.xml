@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.funny.sys.mapper.RoleMenuMapper">
 
+    <select id="getMenuIdListByRoleId" parameterType="Integer" resultType="Integer">
+        select
+            a.`menu_id`
+        from x_role_menu a, x_menu b
+        where a.`menu_id` = b.`menu_id`
+          and b.`is_leaf` = 'Y'
+          and a.`role_id` = #{roleId}
+    </select>
 </mapper>
